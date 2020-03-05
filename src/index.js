@@ -49,7 +49,7 @@ class RedeemDai {
 
   mint = amount => {
     amount = this.formatAmount(amount);
-    return this.rdaiContract.methods.mintamount(amount).send();
+    return this.rdaiContract.methods.mint(amount).send();
   };
 
   getHat = address => {
