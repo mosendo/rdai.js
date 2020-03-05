@@ -13,15 +13,17 @@ class RedeemDai {
   DAI_ADDRESS;
   RDAI_ADDRESS;
 
-  constructor(web3, options) {
+  constructor(web3, options = {}) {
     if (typeof web3 === "undefined") throw new Error("Web3 must be provided");
-    if (typeof web3.givenProvider === "undefined")
-      throw new Error("Web3 instance does not support .givenProvider property");
-    this.web3 = new Web3(web3.givenProvider);
+    if (typeof web3.currentProvider === "undefined")
+      throw new Error(
+        "Web3 instance does not support .currentProvider property"
+      );
+    this.web3 = new Web3(web3.currentProvider);
     this.DAI_ADDRESS = options.DAI_ADDRESS || DAI_ADDRESS;
     this.RDAI_ADDRESS = options.RDAI_ADDRESS || RDAI_ADDRESS;
-    this.daiContract = new web3.eth.Contract(DAI_ABI, this.DAI_ADDRESS);
-    this.rdaiContract = new web3.eth.Contract(RDAI_ABI, this.RDAI_ADDRESS);
+    this.daiContract = new this.web3.eth.Contract(DAI_ABI, this.DAI_ADDRESS);
+    this.rdaiContract = new this.web3.eth.Contract(RDAI_ABI, this.RDAI_ADDRESS);
   }
 
   formatAmount = amount => {
