@@ -20,6 +20,7 @@ class RedeemDai {
         "Web3 instance does not support .currentProvider property"
       );
     this.web3 = new Web3(web3.currentProvider);
+    this.web3.eth.defaultAccount = web3.eth.defaultAccount;
     this.DAI_ADDRESS = options.DAI_ADDRESS || DAI_ADDRESS;
     this.RDAI_ADDRESS = options.RDAI_ADDRESS || RDAI_ADDRESS;
     this.daiContract = new this.web3.eth.Contract(DAI_ABI, this.DAI_ADDRESS);
