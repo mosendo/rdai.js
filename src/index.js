@@ -10,6 +10,7 @@ class RedeemDai {
   web3;
   rdaiContract;
   daiContract;
+  sendOptions;
   DAI_ADDRESS;
   RDAI_ADDRESS;
 
@@ -20,7 +21,9 @@ class RedeemDai {
         "Web3 instance does not support .currentProvider property"
       );
     this.web3 = new Web3(web3.currentProvider);
-    this.web3.eth.defaultAccount = web3.eth.defaultAccount;
+    this.sendOptions = {
+      from: web3.eth.defaultAccount
+    };
     this.DAI_ADDRESS = options.DAI_ADDRESS || DAI_ADDRESS;
     this.RDAI_ADDRESS = options.RDAI_ADDRESS || RDAI_ADDRESS;
     this.daiContract = new this.web3.eth.Contract(DAI_ABI, this.DAI_ADDRESS);
@@ -38,7 +41,9 @@ class RedeemDai {
   approve = () => {
     const BN = this.web3.utils.BN;
     const MAX_UINT = new BN(2).pow(256).sub(1);
-    return this.daiContract.methods.approve(this.RDAI_ADDRESS, MAX_UINT).send();
+    return this.daiContract.methods
+      .approve(this.RDAI_ADDRESS, MAX_UINT)
+      .send(this.sendOptions);
   };
 
   mintWithHat = (amount, hat) => {
@@ -50,7 +55,7 @@ class RedeemDai {
 
   mint = amount => {
     amount = this.formatAmount(amount);
-    return this.rdaiContract.methods.mint(amount).send();
+    return this.rdaiContract.methods.mint(amount).send(this.sendOptions);
   };
 
   getHat = address => {
@@ -60,9 +65,9 @@ class RedeemDai {
   redeem = amount => {
     if (typeof amount != "undefined") {
       amount = this.formatAmount(amount);
-      return this.rdaiContract.methods.redeem(amount).send();
+      return this.rdaiContract.methods.redeem(amount).send(this.sendOptions);
     } else {
-      return this.rdaiContract.methods.redeemAll().send();
+      return this.rdaiContract.methods.redeemAll().send(this.sendOptions);
     }
   };
 
