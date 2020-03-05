@@ -3,6 +3,7 @@ import Web3 from "web3";
 import axios from "axios";
 import RDAI_ABI from "../abi/rdai";
 import DAI_ABI from "../abi/dai";
+import BigNumber from "bignumber.js";
 
 const cTokenApi = "https://api.compound.finance/api/v2/ctoken";
 
@@ -32,15 +33,16 @@ class RedeemDai {
 
   formatAmount = amount => {
     if (typeof amount === "number")
-      return this.web3.utils.toWei(amount, "ether");
-    else if (typeof amount === "string") return new this.web3.utils.BN(amount);
-    else if (typeof amount === "object") return amount;
+      return this.web3.utils.toWei(amount, "ether").toString();
+    else if (typeof amount === "string") return amount;
     else throw new Error("unsupported amount type");
   };
 
   approve = () => {
-    const BN = this.web3.utils.BN;
-    const MAX_UINT = new BN(2).pow(256).sub(1);
+    const MAX_UINT = new BigNumber(2)
+      .pow(256)
+      .minus(1)
+      .toFixed();
     return this.daiContract.methods
       .approve(this.RDAI_ADDRESS, MAX_UINT)
       .send(this.sendOptions);
