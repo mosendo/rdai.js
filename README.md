@@ -6,14 +6,15 @@
 [/build/index.js](/build/index.js)
 
 ### self-host/cdn
+
 ```
 <script src="build/index.js"></script>
-
+ethereum.enable();
 let RedeemDai = window.RedeemDai.default;
-await ethereum.enable();
 let rDai = new RedeemDai(window.web3);
 rDai.mint(amount);
 ```
 
-Note on using `amount` - if type is number, assumed to be human readable, if type is string/BN, assumed to be base units.
+*Note on using `amount` - if type is number, assumed to be human readable, if type is string/BN, assumed to be base units.*
 
+View [/src/index.js](/src/index.js) for available functions
