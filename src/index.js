@@ -33,7 +33,7 @@ class RedeemDai {
   getFastGasPrice = async () => {
     const res = await axios.get(ethGasStationApi);
     const fast = res.data.fast / 10;
-    return this.web3.utils.toWei(fast, "gwei").toString();
+    return this.web3.utils.toWei(String(fast), "gwei").toString();
   };
 
   getSendOptions = async () => {
