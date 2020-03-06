@@ -6,6 +6,7 @@ import DAI_ABI from "../abi/dai";
 import BigNumber from "bignumber.js";
 
 const cTokenApi = "https://api.compound.finance/api/v2/ctoken";
+const ethGasStationApi = "https://ethgasstation.info/json/ethgasAPI.json";
 
 class RedeemDai {
   web3;
@@ -22,14 +23,25 @@ class RedeemDai {
         "Web3 instance does not support .currentProvider property"
       );
     this.web3 = new Web3(web3.currentProvider);
-    this.sendOptions = {
-      from: web3.eth.defaultAccount
-    };
+    this.from = web3.eth.defaultAccount;
     this.DAI_ADDRESS = options.DAI_ADDRESS || DAI_ADDRESS;
     this.RDAI_ADDRESS = options.RDAI_ADDRESS || RDAI_ADDRESS;
     this.daiContract = new this.web3.eth.Contract(DAI_ABI, this.DAI_ADDRESS);
     this.rdaiContract = new this.web3.eth.Contract(RDAI_ABI, this.RDAI_ADDRESS);
   }
+
+  getFastGasPrice = async () => {
+    const res = await axios.get(ethGasStationApi);
+    const fast = res.data.fast / 10;
+    return this.web3.utils.toWei(fast, "gwei").toString();
+  };
+
+  getSendOptions = async () => {
+    return {
+      from: this.from,
+      gasPrice: await this.getFastGasPrice()
+    };
+  };
 
   formatAmount = amount => {
     if (typeof amount === "number")
@@ -38,38 +50,44 @@ class RedeemDai {
     else throw new Error("unsupported amount type");
   };
 
-  approve = () => {
+  approve = async () => {
     const MAX_UINT = new BigNumber(2)
       .pow(256)
       .minus(1)
       .toFixed();
-    return this.daiContract.methods
+    return await this.daiContract.methods
       .approve(this.RDAI_ADDRESS, MAX_UINT)
-      .send(this.sendOptions);
+      .send(await this.getSendOptions());
   };
 
-  mintWithHat = (amount, hat) => {
+  mintWithHat = async (amount, hat) => {
     amount = this.formatAmount(amount);
-    return this.rdaiContract.methods
+    return await this.rdaiContract.methods
       .mintWithNewHat(amount, hat.recipients, hat.proportions)
-      .send();
+      .send(await this.getSendOptions());
   };
 
-  mint = amount => {
+  mint = async amount => {
     amount = this.formatAmount(amount);
-    return this.rdaiContract.methods.mint(amount).send(this.sendOptions);
+    return await this.rdaiContract.methods
+      .mint(amount)
+      .send(await this.getSendOptions());
   };
 
   getHat = address => {
     return this.rdaiContract.methods.getHatByAddress(address).call();
   };
 
-  redeem = amount => {
+  redeem = async amount => {
     if (typeof amount != "undefined") {
       amount = this.formatAmount(amount);
-      return this.rdaiContract.methods.redeem(amount).send(this.sendOptions);
+      return await this.rdaiContract.methods
+        .redeem(amount)
+        .send(await this.getSendOptions());
     } else {
-      return this.rdaiContract.methods.redeemAll().send(this.sendOptions);
+      return await this.rdaiContract.methods
+        .redeemAll()
+        .send(await this.getSendOptions());
     }
   };
 
