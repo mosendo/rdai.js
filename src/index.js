@@ -65,6 +65,12 @@ class RedeemDai {
       .send(await this.getSendOptions());
   };
 
+  createHat = async (hat, useHat = true) => {
+    return await this.rdaiContract.methods
+      .mintWithNewHat(hat.recipients, hat.proportions, useHat)
+      .send(await this.getSendOptions());
+  };
+
   getHat = address => {
     return this.rdaiContract.methods.getHatByAddress(address).call();
   };
