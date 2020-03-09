@@ -43,13 +43,6 @@ class RedeemDai {
     };
   };
 
-  formatAmount = amount => {
-    if (typeof amount === "number")
-      return this.web3.utils.toWei(amount, "ether").toString();
-    else if (typeof amount === "string") return amount;
-    else throw new Error("unsupported amount type");
-  };
-
   approve = async () => {
     const MAX_UINT = new BigNumber(2)
       .pow(256)
@@ -61,14 +54,12 @@ class RedeemDai {
   };
 
   mintWithHat = async (amount, hat) => {
-    amount = this.formatAmount(amount);
     return await this.rdaiContract.methods
       .mintWithNewHat(amount, hat.recipients, hat.proportions)
       .send(await this.getSendOptions());
   };
 
   mint = async amount => {
-    amount = this.formatAmount(amount);
     return await this.rdaiContract.methods
       .mint(amount)
       .send(await this.getSendOptions());
@@ -80,7 +71,6 @@ class RedeemDai {
 
   redeem = async amount => {
     if (typeof amount != "undefined") {
-      amount = this.formatAmount(amount);
       return await this.rdaiContract.methods
         .redeem(amount)
         .send(await this.getSendOptions());

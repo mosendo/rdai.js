@@ -15,6 +15,4 @@ let rDai = new RedeemDai(window.web3);
 rDai.mint(amount);
 ```
 
-*Note on using `amount` - if type is number, assumed to be human readable, if type is string/BN, assumed to be base units.*
-
 View [/src/index.js](/src/index.js) for available functions
