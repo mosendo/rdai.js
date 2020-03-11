@@ -16,14 +16,12 @@ class RedeemDai {
   DAI_ADDRESS;
   RDAI_ADDRESS;
 
-  constructor(web3, options = {}) {
-    if (typeof web3 === "undefined") throw new Error("Web3 must be provided");
-    if (typeof web3.currentProvider === "undefined")
-      throw new Error(
-        "Web3 instance does not support .currentProvider property"
-      );
-    this.web3 = new Web3(web3.currentProvider);
-    this.from = web3.eth.defaultAccount;
+  constructor(provider, options = {}) {
+    if (typeof provider === "undefined") throw new Error("Provider required");
+    if (typeof provider.selectedAddress === "undefined")
+      throw new Error("Please call ethereum.enable() first if using Metamask");
+    this.web3 = new Web3(provider);
+    this.from = provider.selectedAddress;
     this.DAI_ADDRESS = options.DAI_ADDRESS || DAI_ADDRESS;
     this.RDAI_ADDRESS = options.RDAI_ADDRESS || RDAI_ADDRESS;
     this.daiContract = new this.web3.eth.Contract(DAI_ABI, this.DAI_ADDRESS);
@@ -51,6 +49,13 @@ class RedeemDai {
     return await this.daiContract.methods
       .approve(this.RDAI_ADDRESS, MAX_UINT)
       .send(await this.getSendOptions());
+  };
+
+  isApproved = async () => {
+    const allowance = await this.daiContract.methods
+      .allowance(this.from, this.RDAI_ADDRESS)
+      .call();
+    return allowance !== "0";
   };
 
   mintWithHat = async (amount, hat) => {
