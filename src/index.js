@@ -72,7 +72,7 @@ class RedeemDai {
 
   createHat = async (hat, useHat = true) => {
     return await this.rdaiContract.methods
-      .mintWithNewHat(hat.recipients, hat.proportions, useHat)
+      .createdHat(hat.recipients, hat.proportions, useHat)
       .send(await this.getSendOptions());
   };
 
