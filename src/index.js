@@ -41,14 +41,15 @@ class RedeemDai {
     };
   };
 
-  approve = async () => {
+  approve = async (hashCallback = null) => {
     const MAX_UINT = new BigNumber(2)
       .pow(256)
       .minus(1)
       .toFixed();
     return await this.daiContract.methods
       .approve(this.RDAI_ADDRESS, MAX_UINT)
-      .send(await this.getSendOptions());
+      .send(await this.getSendOptions())
+      .on("transactionHash", hashCallback);
   };
 
   isApproved = async () => {
@@ -58,37 +59,42 @@ class RedeemDai {
     return allowance !== "0";
   };
 
-  mintWithHat = async (amount, hat) => {
+  mintWithHat = async (amount, hat, hashCallback = null) => {
     return await this.rdaiContract.methods
       .mintWithNewHat(amount, hat.recipients, hat.proportions)
-      .send(await this.getSendOptions());
+      .send(await this.getSendOptions())
+      .on("transactionHash", hashCallback);
   };
 
-  mint = async amount => {
+  mint = async (amount, hashCallback = null) => {
     return await this.rdaiContract.methods
       .mint(amount)
-      .send(await this.getSendOptions());
+      .send(await this.getSendOptions())
+      .on("transactionHash", hashCallback);
   };
 
-  createHat = async (hat, useHat = true) => {
+  createHat = async (hat, useHat = true, hashCallback = null) => {
     return await this.rdaiContract.methods
       .createHat(hat.recipients, hat.proportions, useHat)
-      .send(await this.getSendOptions());
+      .send(await this.getSendOptions())
+      .on("transactionHash", hashCallback);
   };
 
   getHat = address => {
     return this.rdaiContract.methods.getHatByAddress(address).call();
   };
 
-  redeem = async amount => {
+  redeem = async (amount, hashCallback = null) => {
     if (typeof amount != "undefined") {
       return await this.rdaiContract.methods
         .redeem(amount)
-        .send(await this.getSendOptions());
+        .send(await this.getSendOptions())
+        .on("transactionHash", hashCallback);
     } else {
       return await this.rdaiContract.methods
         .redeemAll()
-        .send(await this.getSendOptions());
+        .send(await this.getSendOptions())
+        .on("transactionHash", hashCallback);
     }
   };
 
